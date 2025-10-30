@@ -4,18 +4,352 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лабораторная работа: Верстка на чистом JS</title>
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Минимальные базовые стили для body */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <div class="loading">Загрузка...</div>
-    </div>
-    
-    <!-- Подключаем модули в правильном порядке -->
-    <script src="utils/helpers.js"></script>
-    <script src="components/header.js"></script>
-    <script src="components/cards.js"></script>
-    <script src="js/team.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        // Основная функция для создания приложения
+        function createApp() {
+            // Создаем основные контейнеры
+            const header = document.createElement('header');
+            const main = document.createElement('main');
+            const footer = document.createElement('footer');
+            
+            // Создаем и настраиваем header
+            const headerContainer = document.createElement('div');
+            headerContainer.className = 'header-container';
+            
+            const logo = document.createElement('h1');
+            logo.textContent = 'L6featVOVA';
+            logo.className = 'logo';
+            
+            const nav = document.createElement('nav');
+            nav.className = 'main-nav';
+            
+            const navItems = ['Главная', 'О нас', 'Проекты', 'Команда', 'Контакты'];
+            navItems.forEach(item => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = item;
+                link.className = 'nav-link';
+                nav.appendChild(link);
+            });
+            
+            headerContainer.appendChild(logo);
+            headerContainer.appendChild(nav);
+            header.appendChild(headerContainer);
+            
+            // Создаем и настраиваем main content
+            const heroSection = document.createElement('section');
+            heroSection.className = 'hero';
+            
+            const heroTitle = document.createElement('h2');
+            heroTitle.textContent = 'Лабораторная работа: Верстка на чистом JavaScript';
+            heroTitle.className = 'hero-title';
+            
+            const heroText = document.createElement('p');
+            heroText.textContent = 'В этой лабораторной работе мы создаем всю разметку исключительно с помощью JavaScript, без использования HTML-тегов в разметке (кроме базовой структуры).';
+            heroText.className = 'hero-text';
+            
+            const teamSection = document.createElement('section');
+            teamSection.className = 'team-section';
+            
+            const teamTitle = document.createElement('h3');
+            teamTitle.textContent = 'Наша команда';
+            teamTitle.className = 'section-title';
+            
+            const teamContainer = document.createElement('div');
+            teamContainer.className = 'team-container';
+            
+            const teamMembers = [
+                { name: 'levch420', role: 'Frontend Developer' },
+                { name: 'Ameravovo', role: 'Backend Developer' }
+            ];
+            
+            teamMembers.forEach(member => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'member-card';
+                
+                const memberName = document.createElement('h4');
+                memberName.textContent = member.name;
+                memberName.className = 'member-name';
+                
+                const memberRole = document.createElement('p');
+                memberRole.textContent = member.role;
+                memberRole.className = 'member-role';
+                
+                memberCard.appendChild(memberName);
+                memberCard.appendChild(memberRole);
+                teamContainer.appendChild(memberCard);
+            });
+            
+            const repoLink = document.createElement('a');
+            repoLink.href = 'https://github.com/levch420/L6featVOVA';
+            repoLink.textContent = 'Ссылка на репозиторий GitHub';
+            repoLink.className = 'repo-link';
+            repoLink.target = '_blank';
+            
+            heroSection.appendChild(heroTitle);
+            heroSection.appendChild(heroText);
+            
+            teamSection.appendChild(teamTitle);
+            teamSection.appendChild(teamContainer);
+            teamSection.appendChild(repoLink);
+            
+            main.appendChild(heroSection);
+            main.appendChild(teamSection);
+            
+            // Создаем и настраиваем footer
+            const footerText = document.createElement('p');
+            footerText.textContent = '© 2025 L6featVOVA. Все права защищены.';
+            footerText.className = 'footer-text';
+            
+            footer.appendChild(footerText);
+            
+            // Добавляем все элементы в body
+            document.body.appendChild(header);
+            document.body.appendChild(main);
+            document.body.appendChild(footer);
+            
+            // Применяем стили через JavaScript
+            applyStyles();
+            
+            // Добавляем интерактивность
+            addInteractivity();
+        }
+        
+        // Функция для применения стилей
+        function applyStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                /* Общие стили */
+                * {
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    background-color: #f9f9f9;
+                }
+                
+                /* Стили для header */
+                header {
+                    background-color: #2c3e50;
+                    color: white;
+                    padding: 1rem 0;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                
+                .header-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0 2rem;
+                }
+                
+                .logo {
+                    margin: 0;
+                    font-size: 1.8rem;
+                    color: #3498db;
+                }
+                
+                .main-nav {
+                    display: flex;
+                    gap: 1.5rem;
+                }
+                
+                .nav-link {
+                    color: white;
+                    text-decoration: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 4px;
+                    transition: background-color 0.3s;
+                }
+                
+                .nav-link:hover {
+                    background-color: #34495e;
+                }
+                
+                /* Стили для main content */
+                main {
+                    max-width: 1200px;
+                    margin: 2rem auto;
+                    padding: 0 2rem;
+                }
+                
+                .hero {
+                    text-align: center;
+                    padding: 3rem 0;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border-radius: 10px;
+                    margin-bottom: 3rem;
+                }
+                
+                .hero-title {
+                    font-size: 2.5rem;
+                    margin-bottom: 1rem;
+                }
+                
+                .hero-text {
+                    font-size: 1.2rem;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                
+                .team-section {
+                    background-color: white;
+                    padding: 2rem;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                
+                .section-title {
+                    text-align: center;
+                    color: #2c3e50;
+                    margin-bottom: 2rem;
+                    font-size: 2rem;
+                }
+                
+                .team-container {
+                    display: flex;
+                    justify-content: center;
+                    gap: 2rem;
+                    flex-wrap: wrap;
+                    margin-bottom: 2rem;
+                }
+                
+                .member-card {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 1.5rem;
+                    text-align: center;
+                    width: 200px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                    transition: transform 0.3s, box-shadow 0.3s;
+                }
+                
+                .member-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                }
+                
+                .member-name {
+                    color: #2c3e50;
+                    margin: 0 0 0.5rem 0;
+                }
+                
+                .member-role {
+                    color: #7f8c8d;
+                    margin: 0;
+                }
+                
+                .repo-link {
+                    display: block;
+                    text-align: center;
+                    background-color: #3498db;
+                    color: white;
+                    padding: 0.8rem 1.5rem;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    transition: background-color 0.3s;
+                    max-width: 300px;
+                    margin: 0 auto;
+                }
+                
+                .repo-link:hover {
+                    background-color: #2980b9;
+                }
+                
+                /* Стили для footer */
+                footer {
+                    background-color: #2c3e50;
+                    color: white;
+                    text-align: center;
+                    padding: 1.5rem 0;
+                    margin-top: 3rem;
+                }
+                
+                .footer-text {
+                    margin: 0;
+                }
+                
+                /* Адаптивность */
+                @media (max-width: 768px) {
+                    .header-container {
+                        flex-direction: column;
+                        gap: 1rem;
+                    }
+                    
+                    .main-nav {
+                        flex-wrap: wrap;
+                        justify-content: center;
+                    }
+                    
+                    .hero-title {
+                        font-size: 2rem;
+                    }
+                    
+                    .hero-text {
+                        font-size: 1rem;
+                    }
+                }
+            `;
+            
+            document.head.appendChild(style);
+        }
+        
+        // Функция для добавления интерактивности
+        function addInteractivity() {
+            // Добавляем обработчики для навигационных ссылок
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert(`Переход на страницу: ${this.textContent}`);
+                });
+            });
+            
+            // Добавляем обработчики для карточек команды
+            const memberCards = document.querySelectorAll('.member-card');
+            memberCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const name = this.querySelector('.member-name').textContent;
+                    alert(`Информация о участнике: ${name}`);
+                });
+            });
+            
+            // Добавляем анимацию появления элементов при загрузке
+            const elementsToAnimate = document.querySelectorAll('.hero, .team-section');
+            elementsToAnimate.forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.5s, transform 0.5s';
+            });
+            
+            // Запускаем анимацию после небольшой задержки
+            setTimeout(() => {
+                elementsToAnimate.forEach(element => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                });
+            }, 100);
+        }
+        
+        // Запускаем приложение после загрузки DOM
+        document.addEventListener('DOMContentLoaded', createApp);
+    </script>
 </body>
 </html>
