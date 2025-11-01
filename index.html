@@ -3,353 +3,1164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лабораторная работа: Верстка на чистом JS</title>
+    <title>User Management SPA</title>
     <style>
-        /* Минимальные базовые стили для body */
-        body {
+        /* Общие стили */
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        #app {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Хедер */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e1e4e8;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #3498db;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            list-style: none;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .breadcrumbs li {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumbs li:not(:last-child)::after {
+            content: ">";
+            margin: 0 10px;
+            color: #95a5a6;
+        }
+
+        .breadcrumb-link {
+            text-decoration: none;
+            color: #3498db;
+            transition: color 0.3s;
+        }
+
+        .breadcrumb-link:hover {
+            color: #2980b9;
+        }
+
+        .breadcrumb-link.active {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        /* Поиск */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Карточки */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .card-content {
+            color: #555;
+        }
+
+        /* Списки */
+        .list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .list-item {
+            padding: 15px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .list-item-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .list-item-meta {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .list-item-content {
+            color: #555;
+        }
+
+        /* Кнопки */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        /* Формы */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        /* Состояния загрузки */
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px;
+            color: #e74c3c;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="app">
+        <!-- Приложение будет рендериться здесь -->
+    </div>
+
     <script>
-        // Основная функция для создания приложения
-        function createApp() {
-            // Создаем основные контейнеры
-            const header = document.createElement('header');
-            const main = document.createElement('main');
-            const footer = document.createElement('footer');
-            
-            // Создаем и настраиваем header
-            const headerContainer = document.createElement('div');
-            headerContainer.className = 'header-container';
-            
-            const logo = document.createElement('h1');
-            logo.textContent = 'L6featVOVA';
-            logo.className = 'logo';
-            
-            const nav = document.createElement('nav');
-            nav.className = 'main-nav';
-            
-            const navItems = ['Главная', 'О нас', 'Проекты', 'Команда', 'Контакты'];
-            navItems.forEach(item => {
-                const link = document.createElement('a');
-                link.href = '#';
-                link.textContent = item;
-                link.className = 'nav-link';
-                nav.appendChild(link);
-            });
-            
-            headerContainer.appendChild(logo);
-            headerContainer.appendChild(nav);
-            header.appendChild(headerContainer);
-            
-            // Создаем и настраиваем main content
-            const heroSection = document.createElement('section');
-            heroSection.className = 'hero';
-            
-            const heroTitle = document.createElement('h2');
-            heroTitle.textContent = 'Лабораторная работа: Верстка на чистом JavaScript';
-            heroTitle.className = 'hero-title';
-            
-            const heroText = document.createElement('p');
-            heroText.textContent = 'В этой лабораторной работе мы создаем всю разметку исключительно с помощью JavaScript, без использования HTML-тегов в разметке (кроме базовой структуры).';
-            heroText.className = 'hero-text';
-            
-            const teamSection = document.createElement('section');
-            teamSection.className = 'team-section';
-            
-            const teamTitle = document.createElement('h3');
-            teamTitle.textContent = 'Наша команда';
-            teamTitle.className = 'section-title';
-            
-            const teamContainer = document.createElement('div');
-            teamContainer.className = 'team-container';
-            
-            const teamMembers = [
-                { name: 'levch420', role: 'Frontend Developer' },
-                { name: 'Ameravovo', role: 'Backend Developer' }
-            ];
-            
-            teamMembers.forEach(member => {
-                const memberCard = document.createElement('div');
-                memberCard.className = 'member-card';
+        // Утилиты для работы с DOM
+        const DOM = {
+            createElement(tag, attributes = {}, children = []) {
+                const element = document.createElement(tag);
                 
-                const memberName = document.createElement('h4');
-                memberName.textContent = member.name;
-                memberName.className = 'member-name';
-                
-                const memberRole = document.createElement('p');
-                memberRole.textContent = member.role;
-                memberRole.className = 'member-role';
-                
-                memberCard.appendChild(memberName);
-                memberCard.appendChild(memberRole);
-                teamContainer.appendChild(memberCard);
-            });
-            
-            const repoLink = document.createElement('a');
-            repoLink.href = 'https://github.com/levch420/L6featVOVA';
-            repoLink.textContent = 'Ссылка на репозиторий GitHub';
-            repoLink.className = 'repo-link';
-            repoLink.target = '_blank';
-            
-            heroSection.appendChild(heroTitle);
-            heroSection.appendChild(heroText);
-            
-            teamSection.appendChild(teamTitle);
-            teamSection.appendChild(teamContainer);
-            teamSection.appendChild(repoLink);
-            
-            main.appendChild(heroSection);
-            main.appendChild(teamSection);
-            
-            // Создаем и настраиваем footer
-            const footerText = document.createElement('p');
-            footerText.textContent = '© 2025 L6featVOVA. Все права защищены.';
-            footerText.className = 'footer-text';
-            
-            footer.appendChild(footerText);
-            
-            // Добавляем все элементы в body
-            document.body.appendChild(header);
-            document.body.appendChild(main);
-            document.body.appendChild(footer);
-            
-            // Применяем стили через JavaScript
-            applyStyles();
-            
-            // Добавляем интерактивность
-            addInteractivity();
-        }
-        
-        // Функция для применения стилей
-        function applyStyles() {
-            const style = document.createElement('style');
-            style.textContent = `
-                /* Общие стили */
-                * {
-                    box-sizing: border-box;
-                }
-                
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    background-color: #f9f9f9;
-                }
-                
-                /* Стили для header */
-                header {
-                    background-color: #2c3e50;
-                    color: white;
-                    padding: 1rem 0;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                }
-                
-                .header-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 0 2rem;
-                }
-                
-                .logo {
-                    margin: 0;
-                    font-size: 1.8rem;
-                    color: #3498db;
-                }
-                
-                .main-nav {
-                    display: flex;
-                    gap: 1.5rem;
-                }
-                
-                .nav-link {
-                    color: white;
-                    text-decoration: none;
-                    padding: 0.5rem 1rem;
-                    border-radius: 4px;
-                    transition: background-color 0.3s;
-                }
-                
-                .nav-link:hover {
-                    background-color: #34495e;
-                }
-                
-                /* Стили для main content */
-                main {
-                    max-width: 1200px;
-                    margin: 2rem auto;
-                    padding: 0 2rem;
-                }
-                
-                .hero {
-                    text-align: center;
-                    padding: 3rem 0;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border-radius: 10px;
-                    margin-bottom: 3rem;
-                }
-                
-                .hero-title {
-                    font-size: 2.5rem;
-                    margin-bottom: 1rem;
-                }
-                
-                .hero-text {
-                    font-size: 1.2rem;
-                    max-width: 800px;
-                    margin: 0 auto;
-                }
-                
-                .team-section {
-                    background-color: white;
-                    padding: 2rem;
-                    border-radius: 10px;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-                }
-                
-                .section-title {
-                    text-align: center;
-                    color: #2c3e50;
-                    margin-bottom: 2rem;
-                    font-size: 2rem;
-                }
-                
-                .team-container {
-                    display: flex;
-                    justify-content: center;
-                    gap: 2rem;
-                    flex-wrap: wrap;
-                    margin-bottom: 2rem;
-                }
-                
-                .member-card {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 1.5rem;
-                    text-align: center;
-                    width: 200px;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-                    transition: transform 0.3s, box-shadow 0.3s;
-                }
-                
-                .member-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                }
-                
-                .member-name {
-                    color: #2c3e50;
-                    margin: 0 0 0.5rem 0;
-                }
-                
-                .member-role {
-                    color: #7f8c8d;
-                    margin: 0;
-                }
-                
-                .repo-link {
-                    display: block;
-                    text-align: center;
-                    background-color: #3498db;
-                    color: white;
-                    padding: 0.8rem 1.5rem;
-                    text-decoration: none;
-                    border-radius: 5px;
-                    font-weight: bold;
-                    transition: background-color 0.3s;
-                    max-width: 300px;
-                    margin: 0 auto;
-                }
-                
-                .repo-link:hover {
-                    background-color: #2980b9;
-                }
-                
-                /* Стили для footer */
-                footer {
-                    background-color: #2c3e50;
-                    color: white;
-                    text-align: center;
-                    padding: 1.5rem 0;
-                    margin-top: 3rem;
-                }
-                
-                .footer-text {
-                    margin: 0;
-                }
-                
-                /* Адаптивность */
-                @media (max-width: 768px) {
-                    .header-container {
-                        flex-direction: column;
-                        gap: 1rem;
-                    }
-                    
-                    .main-nav {
-                        flex-wrap: wrap;
-                        justify-content: center;
-                    }
-                    
-                    .hero-title {
-                        font-size: 2rem;
-                    }
-                    
-                    .hero-text {
-                        font-size: 1rem;
+                // Установка атрибутов
+                for (const [key, value] of Object.entries(attributes)) {
+                    if (key.startsWith('on') && typeof value === 'function') {
+                        element.addEventListener(key.substring(2).toLowerCase(), value);
+                    } else if (key === 'className') {
+                        element.className = value;
+                    } else {
+                        element.setAttribute(key, value);
                     }
                 }
-            `;
+                
+                // Добавление дочерних элементов
+                if (typeof children === 'string') {
+                    element.textContent = children;
+                } else if (Array.isArray(children)) {
+                    children.forEach(child => {
+                        if (typeof child === 'string') {
+                            element.appendChild(document.createTextNode(child));
+                        } else if (child instanceof Node) {
+                            element.appendChild(child);
+                        }
+                    });
+                }
+                
+                return element;
+            },
             
-            document.head.appendChild(style);
-        }
-        
-        // Функция для добавления интерактивности
-        function addInteractivity() {
-            // Добавляем обработчики для навигационных ссылок
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    alert(`Переход на страницу: ${this.textContent}`);
+            clearContainer(container) {
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+            }
+        };
+
+        // Утилиты для работы с API
+        const API = {
+            baseURL: 'https://jsonplaceholder.typicode.com',
+            
+            async get(endpoint) {
+                try {
+                    const response = await fetch(`${this.baseURL}${endpoint}`);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('API Error:', error);
+                    throw error;
+                }
+            },
+            
+            async getUsers() {
+                return this.get('/users');
+            },
+            
+            async getTodos() {
+                return this.get('/todos');
+            },
+            
+            async getPosts() {
+                return this.get('/posts');
+            },
+            
+            async getComments() {
+                return this.get('/comments');
+            }
+        };
+
+        // Утилиты для работы с localStorage
+        const Storage = {
+            key: 'userManagementApp',
+            
+            getData() {
+                const data = localStorage.getItem(this.key);
+                return data ? JSON.parse(data) : { users: [], todos: [] };
+            },
+            
+            saveData(data) {
+                localStorage.setItem(this.key, JSON.stringify(data));
+            },
+            
+            addUser(user) {
+                const data = this.getData();
+                // Генерируем уникальный ID для нового пользователя
+                const newId = data.users.length > 0 
+                    ? Math.max(...data.users.map(u => u.id)) + 1 
+                    : 1000; // Начинаем с 1000, чтобы не конфликтовать с API
+                
+                const newUser = {
+                    ...user,
+                    id: newId
+                };
+                
+                data.users.push(newUser);
+                this.saveData(data);
+                return newUser;
+            },
+            
+            deleteUser(userId) {
+                const data = this.getData();
+                data.users = data.users.filter(user => user.id !== userId);
+                // Также удаляем todos этого пользователя
+                data.todos = data.todos.filter(todo => todo.userId !== userId);
+                this.saveData(data);
+            },
+            
+            addTodo(todo) {
+                const data = this.getData();
+                // Генерируем уникальный ID для новой задачи
+                const newId = data.todos.length > 0 
+                    ? Math.max(...data.todos.map(t => t.id)) + 1 
+                    : 1000;
+                
+                const newTodo = {
+                    ...todo,
+                    id: newId
+                };
+                
+                data.todos.push(newTodo);
+                this.saveData(data);
+                return newTodo;
+            },
+            
+            getUsers() {
+                return this.getData().users;
+            },
+            
+            getTodos() {
+                return this.getData().todos;
+            }
+        };
+
+        // Компонент Breadcrumbs
+        class Breadcrumbs {
+            constructor(container, routes) {
+                this.container = container;
+                this.routes = routes;
+            }
+            
+            render(currentRoute) {
+                DOM.clearContainer(this.container);
+                
+                const breadcrumbItems = [];
+                const pathParts = currentRoute.split('#').filter(part => part);
+                
+                // Добавляем домашнюю страницу
+                breadcrumbItems.push(this.createBreadcrumbItem('Главная', '#', pathParts.length === 0));
+                
+                // Строим цепочку навигации
+                let accumulatedPath = '';
+                pathParts.forEach((part, index) => {
+                    accumulatedPath += `#${part}`;
+                    const isLast = index === pathParts.length - 1;
+                    const routeName = this.routes[part] || part;
+                    breadcrumbItems.push(this.createBreadcrumbItem(routeName, accumulatedPath, isLast));
                 });
-            });
+                
+                const breadcrumbsList = DOM.createElement('ul', { className: 'breadcrumbs' }, breadcrumbItems);
+                this.container.appendChild(breadcrumbsList);
+            }
             
-            // Добавляем обработчики для карточек команды
-            const memberCards = document.querySelectorAll('.member-card');
-            memberCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const name = this.querySelector('.member-name').textContent;
-                    alert(`Информация о участнике: ${name}`);
-                });
-            });
-            
-            // Добавляем анимацию появления элементов при загрузке
-            const elementsToAnimate = document.querySelectorAll('.hero, .team-section');
-            elementsToAnimate.forEach(element => {
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(20px)';
-                element.style.transition = 'opacity 0.5s, transform 0.5s';
-            });
-            
-            // Запускаем анимацию после небольшой задержки
-            setTimeout(() => {
-                elementsToAnimate.forEach(element => {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                });
-            }, 100);
+            createBreadcrumbItem(name, path, isActive) {
+                const link = DOM.createElement('a', {
+                    href: path,
+                    className: `breadcrumb-link ${isActive ? 'active' : ''}`
+                }, name);
+                
+                return DOM.createElement('li', {}, [link]);
+            }
         }
-        
-        // Запускаем приложение после загрузки DOM
-        document.addEventListener('DOMContentLoaded', createApp);
+
+        // Компонент поиска
+        class Search {
+            constructor(container, onSearch) {
+                this.container = container;
+                this.onSearch = onSearch;
+                this.timeoutId = null;
+                this.render();
+            }
+            
+            render() {
+                DOM.clearContainer(this.container);
+                
+                const searchInput = DOM.createElement('input', {
+                    type: 'text',
+                    placeholder: 'Поиск...',
+                    className: 'search-input',
+                    onInput: (e) => this.handleInput(e.target.value)
+                });
+                
+                this.container.appendChild(searchInput);
+            }
+            
+            handleInput(value) {
+                // Дебаунс для ограничения частоты запросов
+                clearTimeout(this.timeoutId);
+                this.timeoutId = setTimeout(() => {
+                    this.onSearch(value);
+                }, 300);
+            }
+        }
+
+        // Компонент списка пользователей
+        class UsersList {
+            constructor(container, router) {
+                this.container = container;
+                this.router = router;
+                this.users = [];
+                this.filteredUsers = [];
+                this.searchTerm = '';
+            }
+            
+            async loadData() {
+                try {
+                    // Получаем пользователей из API и localStorage
+                    const apiUsers = await API.getUsers();
+                    const localUsers = Storage.getUsers();
+                    this.users = [...apiUsers, ...localUsers];
+                    this.filteredUsers = [...this.users];
+                    this.render();
+                } catch (error) {
+                    this.renderError('Ошибка загрузки пользователей');
+                }
+            }
+            
+            render() {
+                DOM.clearContainer(this.container);
+                
+                // Заголовок
+                const header = DOM.createElement('div', { className: 'card-header' }, [
+                    DOM.createElement('h2', { className: 'card-title' }, 'Пользователи'),
+                    DOM.createElement('button', {
+                        className: 'btn btn-primary',
+                        onClick: () => this.showAddUserForm()
+                    }, 'Добавить пользователя')
+                ]);
+                
+                // Список пользователей
+                const userList = DOM.createElement('div', { className: 'list' });
+                
+                if (this.filteredUsers.length === 0) {
+                    userList.appendChild(DOM.createElement('div', { className: 'loading' }, 
+                        this.searchTerm ? 'Пользователи не найдены' : 'Нет пользователей'));
+                } else {
+                    this.filteredUsers.forEach(user => {
+                        const userItem = DOM.createElement('div', { className: 'list-item' }, [
+                            DOM.createElement('div', { className: 'list-item-header' }, [
+                                DOM.createElement('div', { className: 'list-item-title' }, user.name),
+                                // Показываем кнопку удаления только для локальных пользователей
+                                user.id >= 1000 ? DOM.createElement('button', {
+                                    className: 'btn btn-danger',
+                                    onClick: () => this.deleteUser(user.id)
+                                }, 'Удалить') : null
+                            ]),
+                            DOM.createElement('div', { className: 'list-item-meta' }, user.email),
+                            DOM.createElement('div', { className: 'list-item-content' }, [
+                                DOM.createElement('p', {}, `Телефон: ${user.phone}`),
+                                DOM.createElement('p', {}, `Компания: ${user.company?.name || 'Не указана'}`)
+                            ]),
+                            DOM.createElement('div', { style: 'margin-top: 10px; display: flex; gap: 10px;' }, [
+                                DOM.createElement('button', {
+                                    className: 'btn btn-primary',
+                                    onClick: () => this.router.navigateTo(`#users#todos#${user.id}`)
+                                }, 'Задачи'),
+                                DOM.createElement('button', {
+                                    className: 'btn btn-primary',
+                                    onClick: () => this.router.navigateTo(`#users#posts#${user.id}`)
+                                }, 'Посты')
+                            ])
+                        ]);
+                        
+                        userList.appendChild(userItem);
+                    });
+                }
+                
+                const card = DOM.createElement('div', { className: 'card' }, [header, userList]);
+                this.container.appendChild(card);
+            }
+            
+            renderError(message) {
+                DOM.clearContainer(this.container);
+                this.container.appendChild(DOM.createElement('div', { className: 'error' }, message));
+            }
+            
+            search(term) {
+                this.searchTerm = term.toLowerCase();
+                
+                if (!this.searchTerm) {
+                    this.filteredUsers = [...this.users];
+                } else {
+                    this.filteredUsers = this.users.filter(user => 
+                        user.name.toLowerCase().includes(this.searchTerm) || 
+                        user.email.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
+                this.render();
+            }
+            
+            showAddUserForm() {
+                DOM.clearContainer(this.container);
+                
+                const form = DOM.createElement('form', { 
+                    className: 'card',
+                    onSubmit: (e) => this.handleAddUser(e)
+                }, [
+                    DOM.createElement('h2', { className: 'card-title' }, 'Добавить пользователя'),
+                    
+                    DOM.createElement('div', { className: 'form-group' }, [
+                        DOM.createElement('label', { className: 'form-label' }, 'Имя'),
+                        DOM.createElement('input', { 
+                            type: 'text', 
+                            className: 'form-input',
+                            name: 'name',
+                            required: true
+                        })
+                    ]),
+                    
+                    DOM.createElement('div', { className: 'form-group' }, [
+                        DOM.createElement('label', { className: 'form-label' }, 'Email'),
+                        DOM.createElement('input', { 
+                            type: 'email', 
+                            className: 'form-input',
+                            name: 'email',
+                            required: true
+                        })
+                    ]),
+                    
+                    DOM.createElement('div', { className: 'form-group' }, [
+                        DOM.createElement('label', { className: 'form-label' }, 'Телефон'),
+                        DOM.createElement('input', { 
+                            type: 'text', 
+                            className: 'form-input',
+                            name: 'phone'
+                        })
+                    ]),
+                    
+                    DOM.createElement('div', { className: 'form-group' }, [
+                        DOM.createElement('label', { className: 'form-label' }, 'Компания'),
+                        DOM.createElement('input', { 
+                            type: 'text', 
+                            className: 'form-input',
+                            name: 'company'
+                        })
+                    ]),
+                    
+                    DOM.createElement('div', { style: 'display: flex; gap: 10px;' }, [
+                        DOM.createElement('button', { type: 'submit', className: 'btn btn-success' }, 'Сохранить'),
+                        DOM.createElement('button', { 
+                            type: 'button', 
+                            className: 'btn btn-primary',
+                            onClick: () => this.loadData()
+                        }, 'Отмена')
+                    ])
+                ]);
+                
+                this.container.appendChild(form);
+            }
+            
+            handleAddUser(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                
+                const newUser = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone') || 'Не указан',
+                    company: {
+                        name: formData.get('company') || 'Не указана'
+                    }
+                };
+                
+                Storage.addUser(newUser);
+                this.loadData(); // Перезагружаем список
+            }
+            
+            deleteUser(userId) {
+                if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
+                    Storage.deleteUser(userId);
+                    this.loadData(); // Перезагружаем список
+                }
+            }
+        }
+
+        // Компонент списка задач
+        class TodosList {
+            constructor(container, router) {
+                this.container = container;
+                this.router = router;
+                this.todos = [];
+                this.filteredTodos = [];
+                this.searchTerm = '';
+                this.userId = null;
+                this.user = null;
+            }
+            
+            async loadData(userId) {
+                this.userId = userId;
+                
+                try {
+                    // Получаем задачи из API и localStorage
+                    const apiTodos = await API.getTodos();
+                    const localTodos = Storage.getTodos();
+                    this.todos = [...apiTodos, ...localTodos];
+                    
+                    // Фильтруем задачи по пользователю
+                    this.todos = this.todos.filter(todo => todo.userId == userId);
+                    
+                    // Получаем информацию о пользователе
+                    const apiUsers = await API.getUsers();
+                    const localUsers = Storage.getUsers();
+                    const allUsers = [...apiUsers, ...localUsers];
+                    this.user = allUsers.find(user => user.id == userId);
+                    
+                    this.filteredTodos = [...this.todos];
+                    this.render();
+                } catch (error) {
+                    this.renderError('Ошибка загрузки задач');
+                }
+            }
+            
+            render() {
+                DOM.clearContainer(this.container);
+                
+                if (!this.user) {
+                    this.renderError('Пользователь не найден');
+                    return;
+                }
+                
+                // Заголовок
+                const header = DOM.createElement('div', { className: 'card-header' }, [
+                    DOM.createElement('h2', { className: 'card-title' }, `Задачи пользователя: ${this.user.name}`),
+                    DOM.createElement('button', {
+                        className: 'btn btn-primary',
+                        onClick: () => this.showAddTodoForm()
+                    }, 'Добавить задачу')
+                ]);
+                
+                // Список задач
+                const todoList = DOM.createElement('div', { className: 'list' });
+                
+                if (this.filteredTodos.length === 0) {
+                    todoList.appendChild(DOM.createElement('div', { className: 'loading' }, 
+                        this.searchTerm ? 'Задачи не найдены' : 'Нет задач'));
+                } else {
+                    this.filteredTodos.forEach(todo => {
+                        const todoItem = DOM.createElement('div', { className: 'list-item' }, [
+                            DOM.createElement('div', { className: 'list-item-header' }, [
+                                DOM.createElement('div', { 
+                                    className: 'list-item-title',
+                                    style: todo.completed ? 'text-decoration: line-through;' : ''
+                                }, todo.title),
+                                DOM.createElement('div', { className: 'list-item-meta' }, 
+                                    todo.completed ? 'Выполнено' : 'Не выполнено')
+                            ])
+                        ]);
+                        
+                        todoList.appendChild(todoItem);
+                    });
+                }
+                
+                const card = DOM.createElement('div', { className: 'card' }, [header, todoList]);
+                this.container.appendChild(card);
+            }
+            
+            renderError(message) {
+                DOM.clearContainer(this.container);
+                this.container.appendChild(DOM.createElement('div', { className: 'error' }, message));
+            }
+            
+            search(term) {
+                this.searchTerm = term.toLowerCase();
+                
+                if (!this.searchTerm) {
+                    this.filteredTodos = [...this.todos];
+                } else {
+                    this.filteredTodos = this.todos.filter(todo => 
+                        todo.title.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
+                this.render();
+            }
+            
+            showAddTodoForm() {
+                DOM.clearContainer(this.container);
+                
+                const form = DOM.createElement('form', { 
+                    className: 'card',
+                    onSubmit: (e) => this.handleAddTodo(e)
+                }, [
+                    DOM.createElement('h2', { className: 'card-title' }, 'Добавить задачу'),
+                    
+                    DOM.createElement('div', { className: 'form-group' }, [
+                        DOM.createElement('label', { className: 'form-label' }, 'Название задачи'),
+                        DOM.createElement('input', { 
+                            type: 'text', 
+                            className: 'form-input',
+                            name: 'title',
+                            required: true
+                        })
+                    ]),
+                    
+                    DOM.createElement('div', { className: 'form-group' }, [
+                        DOM.createElement('label', { className: 'form-label' }, [
+                            DOM.createElement('input', { 
+                                type: 'checkbox', 
+                                name: 'completed',
+                                style: 'margin-right: 8px;'
+                            }),
+                            'Задача выполнена'
+                        ])
+                    ]),
+                    
+                    DOM.createElement('div', { style: 'display: flex; gap: 10px;' }, [
+                        DOM.createElement('button', { type: 'submit', className: 'btn btn-success' }, 'Сохранить'),
+                        DOM.createElement('button', { 
+                            type: 'button', 
+                            className: 'btn btn-primary',
+                            onClick: () => this.loadData(this.userId)
+                        }, 'Отмена')
+                    ])
+                ]);
+                
+                this.container.appendChild(form);
+            }
+            
+            handleAddTodo(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                
+                const newTodo = {
+                    userId: parseInt(this.userId),
+                    title: formData.get('title'),
+                    completed: formData.get('completed') === 'on'
+                };
+                
+                Storage.addTodo(newTodo);
+                this.loadData(this.userId); // Перезагружаем список
+            }
+        }
+
+        // Компонент списка постов
+        class PostsList {
+            constructor(container, router) {
+                this.container = container;
+                this.router = router;
+                this.posts = [];
+                this.filteredPosts = [];
+                this.searchTerm = '';
+                this.userId = null;
+                this.user = null;
+            }
+            
+            async loadData(userId) {
+                this.userId = userId;
+                
+                try {
+                    // Получаем посты из API
+                    const apiPosts = await API.getPosts();
+                    this.posts = apiPosts.filter(post => post.userId == userId);
+                    
+                    // Получаем информацию о пользователе
+                    const apiUsers = await API.getUsers();
+                    const localUsers = Storage.getUsers();
+                    const allUsers = [...apiUsers, ...localUsers];
+                    this.user = allUsers.find(user => user.id == userId);
+                    
+                    this.filteredPosts = [...this.posts];
+                    this.render();
+                } catch (error) {
+                    this.renderError('Ошибка загрузки постов');
+                }
+            }
+            
+            render() {
+                DOM.clearContainer(this.container);
+                
+                if (!this.user) {
+                    this.renderError('Пользователь не найден');
+                    return;
+                }
+                
+                // Заголовок
+                const header = DOM.createElement('div', { className: 'card-header' }, [
+                    DOM.createElement('h2', { className: 'card-title' }, `Посты пользователя: ${this.user.name}`)
+                ]);
+                
+                // Список постов
+                const postList = DOM.createElement('div', { className: 'list' });
+                
+                if (this.filteredPosts.length === 0) {
+                    postList.appendChild(DOM.createElement('div', { className: 'loading' }, 
+                        this.searchTerm ? 'Посты не найдены' : 'Нет постов'));
+                } else {
+                    this.filteredPosts.forEach(post => {
+                        const postItem = DOM.createElement('div', { className: 'list-item' }, [
+                            DOM.createElement('div', { className: 'list-item-header' }, [
+                                DOM.createElement('div', { className: 'list-item-title' }, post.title)
+                            ]),
+                            DOM.createElement('div', { className: 'list-item-content' }, post.body),
+                            DOM.createElement('div', { style: 'margin-top: 10px;' }, [
+                                DOM.createElement('button', {
+                                    className: 'btn btn-primary',
+                                    onClick: () => this.router.navigateTo(`#users#posts#comments#${post.id}`)
+                                }, 'Комментарии')
+                            ])
+                        ]);
+                        
+                        postList.appendChild(postItem);
+                    });
+                }
+                
+                const card = DOM.createElement('div', { className: 'card' }, [header, postList]);
+                this.container.appendChild(card);
+            }
+            
+            renderError(message) {
+                DOM.clearContainer(this.container);
+                this.container.appendChild(DOM.createElement('div', { className: 'error' }, message));
+            }
+            
+            search(term) {
+                this.searchTerm = term.toLowerCase();
+                
+                if (!this.searchTerm) {
+                    this.filteredPosts = [...this.posts];
+                } else {
+                    this.filteredPosts = this.posts.filter(post => 
+                        post.title.toLowerCase().includes(this.searchTerm) || 
+                        post.body.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
+                this.render();
+            }
+        }
+
+        // Компонент списка комментариев
+        class CommentsList {
+            constructor(container, router) {
+                this.container = container;
+                this.router = router;
+                this.comments = [];
+                this.filteredComments = [];
+                this.searchTerm = '';
+                this.postId = null;
+                this.post = null;
+            }
+            
+            async loadData(postId) {
+                this.postId = postId;
+                
+                try {
+                    // Получаем комментарии из API
+                    const apiComments = await API.getComments();
+                    this.comments = apiComments.filter(comment => comment.postId == postId);
+                    
+                    // Получаем информацию о посте
+                    const apiPosts = await API.getPosts();
+                    this.post = apiPosts.find(post => post.id == postId);
+                    
+                    this.filteredComments = [...this.comments];
+                    this.render();
+                } catch (error) {
+                    this.renderError('Ошибка загрузки комментариев');
+                }
+            }
+            
+            render() {
+                DOM.clearContainer(this.container);
+                
+                if (!this.post) {
+                    this.renderError('Пост не найден');
+                    return;
+                }
+                
+                // Заголовок
+                const header = DOM.createElement('div', { className: 'card-header' }, [
+                    DOM.createElement('h2', { className: 'card-title' }, `Комментарии к посту: ${this.post.title}`)
+                ]);
+                
+                // Список комментариев
+                const commentList = DOM.createElement('div', { className: 'list' });
+                
+                if (this.filteredComments.length === 0) {
+                    commentList.appendChild(DOM.createElement('div', { className: 'loading' }, 
+                        this.searchTerm ? 'Комментарии не найдены' : 'Нет комментариев'));
+                } else {
+                    this.filteredComments.forEach(comment => {
+                        const commentItem = DOM.createElement('div', { className: 'list-item' }, [
+                            DOM.createElement('div', { className: 'list-item-header' }, [
+                                DOM.createElement('div', { className: 'list-item-title' }, comment.name),
+                                DOM.createElement('div', { className: 'list-item-meta' }, comment.email)
+                            ]),
+                            DOM.createElement('div', { className: 'list-item-content' }, comment.body)
+                        ]);
+                        
+                        commentList.appendChild(commentItem);
+                    });
+                }
+                
+                const card = DOM.createElement('div', { className: 'card' }, [header, commentList]);
+                this.container.appendChild(card);
+            }
+            
+            renderError(message) {
+                DOM.clearContainer(this.container);
+                this.container.appendChild(DOM.createElement('div', { className: 'error' }, message));
+            }
+            
+            search(term) {
+                this.searchTerm = term.toLowerCase();
+                
+                if (!this.searchTerm) {
+                    this.filteredComments = [...this.comments];
+                } else {
+                    this.filteredComments = this.comments.filter(comment => 
+                        comment.name.toLowerCase().includes(this.searchTerm) || 
+                        comment.body.toLowerCase().includes(this.searchTerm)
+                    );
+                }
+                
+                this.render();
+            }
+        }
+
+        // Маршрутизатор
+        class Router {
+            constructor(container) {
+                this.container = container;
+                this.routes = {
+                    'users': () => this.showUsers(),
+                    'users#todos': (userId) => this.showTodos(userId),
+                    'users#posts': (userId) => this.showPosts(userId),
+                    'users#posts#comments': (postId) => this.showComments(postId)
+                };
+                
+                this.currentComponent = null;
+                this.currentSearch = null;
+                
+                // Инициализация компонентов
+                this.usersList = new UsersList(this.container, this);
+                this.todosList = new TodosList(this.container, this);
+                this.postsList = new PostsList(this.container, this);
+                this.commentsList = new CommentsList(this.container, this);
+                
+                // Обработка изменения хэша
+                window.addEventListener('hashchange', () => this.handleRouteChange());
+            }
+            
+            handleRouteChange() {
+                const hash = window.location.hash.substring(1);
+                const parts = hash.split('#').filter(part => part);
+                
+                if (parts.length === 0) {
+                    this.showUsers();
+                    return;
+                }
+                
+                const routeKey = parts.slice(0, -1).join('#');
+                const param = parts[parts.length - 1];
+                
+                if (this.routes[routeKey]) {
+                    this.routes[routeKey](param);
+                } else if (this.routes[hash]) {
+                    this.routes[hash]();
+                } else {
+                    this.showUsers();
+                }
+            }
+            
+            showUsers() {
+                this.currentComponent = this.usersList;
+                this.usersList.loadData();
+                this.updateSearch('users');
+            }
+            
+            showTodos(userId) {
+                this.currentComponent = this.todosList;
+                this.todosList.loadData(userId);
+                this.updateSearch('todos');
+            }
+            
+            showPosts(userId) {
+                this.currentComponent = this.postsList;
+                this.postsList.loadData(userId);
+                this.updateSearch('posts');
+            }
+            
+            showComments(postId) {
+                this.currentComponent = this.commentsList;
+                this.commentsList.loadData(postId);
+                this.updateSearch('comments');
+            }
+            
+            updateSearch(type) {
+                if (this.currentSearch) {
+                    this.currentSearch.onSearch = (term) => this.currentComponent.search(term);
+                }
+            }
+            
+            navigateTo(path) {
+                window.location.hash = path;
+            }
+            
+            init() {
+                this.handleRouteChange();
+            }
+        }
+
+        // Главный компонент приложения
+        class App {
+            constructor() {
+                this.container = document.getElementById('app');
+                this.router = new Router(this.createContentContainer());
+                this.breadcrumbs = new Breadcrumbs(this.createBreadcrumbsContainer(), {
+                    'users': 'Пользователи',
+                    'todos': 'Задачи',
+                    'posts': 'Посты',
+                    'comments': 'Комментарии'
+                });
+                this.search = new Search(this.createSearchContainer(), (term) => {
+                    this.router.currentComponent.search(term);
+                });
+                
+                this.router.currentSearch = this.search;
+            }
+            
+            createBreadcrumbsContainer() {
+                const container = DOM.createElement('div', { id: 'breadcrumbs' });
+                this.container.appendChild(container);
+                return container;
+            }
+            
+            createSearchContainer() {
+                const container = DOM.createElement('div', { className: 'search-container' });
+                this.container.appendChild(container);
+                return container;
+            }
+            
+            createContentContainer() {
+                const container = DOM.createElement('div', { id: 'content' });
+                this.container.appendChild(container);
+                return container;
+            }
+            
+            createHeader() {
+                const header = DOM.createElement('div', { className: 'header' }, [
+                    DOM.createElement('div', { className: 'logo' }, 'User Management'),
+                    DOM.createElement('nav', { className: 'nav' }, [
+                        DOM.createElement('a', { 
+                            href: '#users', 
+                            className: 'nav-link active'
+                        }, 'Пользователи')
+                    ])
+                ]);
+                
+                this.container.insertBefore(header, this.container.firstChild);
+            }
+            
+            init() {
+                this.createHeader();
+                this.router.init();
+                
+                // Обновляем breadcrumbs при изменении маршрута
+                window.addEventListener('hashchange', () => {
+                    this.breadcrumbs.render(window.location.hash.substring(1));
+                });
+                
+                // Инициализация breadcrumbs
+                this.breadcrumbs.render(window.location.hash.substring(1));
+            }
+        }
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new App();
+            app.init();
+        });
     </script>
 </body>
 </html>
